@@ -1,9 +1,11 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"net"
 	"time"
+
 	"github.com/gen2brain/beeep"
 )
 
@@ -26,6 +28,9 @@ func playBeep() {
 
 func main() {
 
+	var beepPntr *bool = flag.Bool("beep", false, "Play beep")
+	flag.Parse()
+
 	var previousIP string
 
 	currentIP, err := getLocalIP()
@@ -36,8 +41,10 @@ func main() {
 
 	previousIP = currentIP
 
-	fmt.Println("\033[032m"+currentIP+"\033[0m")
-	playBeep()
+	fmt.Println("\033[032m" + currentIP + "\033[0m")
+	if *beepPntr {
+		playBeep()
+	}
 	for {
 		currentIP, err := getLocalIP()
 		if err != nil {
@@ -49,7 +56,9 @@ func main() {
 		if currentIP != previousIP {
 			fmt.Printf("\033[031m  ->: %s\n", currentIP)
 			previousIP = currentIP
-			playBeep()
+			if *beepPntr {
+				playBeep()
+			}
 		}
 		time.Sleep(10 * time.Second)
 	}
